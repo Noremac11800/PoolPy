@@ -1,0 +1,34 @@
+from poolpy.globals import *
+from poolpy.ball import Ball
+from poolpy.table import Table
+
+
+if __name__ == "__main__":
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+    table = Table()
+    table.rack()
+
+    clock =  pygame.time.Clock()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        if pygame.mouse.get_pressed()[0]:
+            mx, my = pygame.mouse.get_pos()
+            if table.is_mouse_over_cue_ball(mx, my):
+                table.is_aiming = True
+        else:
+            if table.is_aiming:
+                table.is_aiming = False
+                table.shoot(table.get_power())
+
+        screen.fill(WHITE)
+
+        table.update_balls()
+        table.draw(screen)
+
+        pygame.display.update()
+        clock.tick(60)

@@ -1,0 +1,50 @@
+from enum import Enum
+from math import sqrt
+import random
+
+import pygame
+from pygame import gfxdraw
+
+from poolpy.utils import *
+
+pygame.init()
+
+WIDTH = 600
+HEIGHT = 700
+
+# Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+# Pool ball colors
+YELLOW = (255, 204, 0)
+BLUE = (0, 51, 204)
+RED = (204, 0, 0)
+PURPLE = (102, 0, 153)
+ORANGE = (255, 102, 0)
+GREEN = (0, 200, 0)
+BURGUNDY = (128, 0, 32)
+BLACK_BALL = (32, 32, 32)
+BALL_WHITE = (245, 245, 245)
+BALL_COLOURS = [
+    YELLOW,
+    BLUE,
+    RED,
+    PURPLE,
+    ORANGE,
+    GREEN,
+    BURGUNDY,
+]
+
+# Pool table colors
+TABLE_GREEN = (26, 89, 46)
+WOODEN_BROWN = (139, 69, 19)
+POCKET_BLACK = (46, 46, 46)
+
+# Fonts
+FONT = pygame.font.SysFont("Optima", 20)
+
+MAX_POWER = 0.1
+MAX_POWER_LINE_LENGTH = 100
+TABLE_FRICTION_FACTOR = 0.99
+WALL_RESTITUTION_FACTOR = 0.80
