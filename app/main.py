@@ -4,7 +4,9 @@ from poolpy.table import Table
 
 
 if __name__ == "__main__":
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED | pygame.RESIZABLE, vsync=1)
+
+    pygame.display.set_caption("PoolPy")
 
     table = Table()
     table.rack()
@@ -25,10 +27,10 @@ if __name__ == "__main__":
                 table.is_aiming = False
                 table.shoot(table.get_power())
 
-        screen.fill(WHITE)
+        screen.fill(BLACK)
 
         table.update_balls()
         table.draw(screen)
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(120)

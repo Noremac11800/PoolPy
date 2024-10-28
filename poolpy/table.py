@@ -60,6 +60,10 @@ class Table:
         self.cue_ball = Ball(150 + 150, 100 + 400, BALL_WHITE, BallType.Cue)
         self.balls.append(self.cue_ball)
 
+    def reset_cue_ball(self) -> None:
+        self.cue_ball = Ball(150 + 150, 100 + 400, BALL_WHITE, BallType.Cue)
+        self.balls.append(self.cue_ball)
+
     def is_mouse_over_cue_ball(self, mx: int, my: int) -> bool:
         if self.cue_ball is not None:
             return (self.cue_ball.x - mx) ** 2 + (self.cue_ball.y - my) ** 2 <= 10 ** 2
@@ -89,6 +93,11 @@ class Table:
                         self.was_collision_this_frame = True
                         ball.apply_ball_collision(other_ball)
             ball.update()
+
+            if ball.is_in_pocket() is not None:
+                self.balls.remove(ball)
+                if ball is self.cue_ball:
+                    self.reset_cue_ball()
 
     def draw(self, window: pygame.Surface) -> None:
         gfxdraw.box(window, pygame.Rect(150, 100, 300, 500), TABLE_GREEN)

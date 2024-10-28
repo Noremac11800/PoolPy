@@ -17,8 +17,6 @@ class Ball:
 
         self.radius = 10
         self.velocity = Vector2(0, 0)
-        self.position_before_collision: Vector2 = Vector2(x, y)
-        self.has_processed_collision_this_frame: bool = False
 
     def is_colliding_with_wall(self) -> bool:
         # Top
@@ -53,16 +51,15 @@ class Ball:
         self.velocity = -WALL_RESTITUTION_FACTOR * velocity_perpendicular + velocity_parallel
 
     def is_colliding_with_ball(self, other: 'Ball') -> bool:
-        if self.has_processed_collision_this_frame:
-            return False
+        distance_between_centers = sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
 
-        is_colliding = (self.x - other.x) ** 2 + (self.y - other.y) ** 2 <= (2 * self.radius) ** 2
+        is_colliding = distance_between_centers < 2 * self.radius
+
         if is_colliding:
-            self.x, self.y = self.position_before_collision
-            self.has_processed_collision_this_frame = True
-            other.has_processed_collision_this_frame = True
-            # if self.velocity.length() <= 1:
-            #     self.velocity = self.velocity.normalize() * 5
+            away_from_ball = (Vector2(self.x, self.y) - Vector2(other.x, other.y)).normalize()
+            self.x += abs(self.radius - distance_between_centers / 2) * away_from_ball.x
+            self.y += abs(self.radius - distance_between_centers / 2) * away_from_ball.y
+
         return is_colliding
 
     def apply_ball_collision(self, other: 'Ball') -> None:
@@ -76,17 +73,32 @@ class Ball:
     def apply_friction(self) -> None:
         self.velocity *= TABLE_FRICTION_FACTOR
 
+    def is_in_pocket(self) -> str | None:
+        pocket_centres = {
+            "top_left": (150 + 5, 100 + 5),
+            "top_right": (300 + 150 - 5, 100 + 5),
+            "center_left": (150, 100 + 250),
+            "center_right": (300 + 150, 100 + 250),
+            "bottom_left": (150 + 5, 500 + 100 - 5),
+            "bottom_right": (300 + 150 - 5, 500 + 100 - 5),
+        }
+
+        for pocket, centre in pocket_centres.items():
+            distance = sqrt((self.x - centre[0]) ** 2 + (self.y - centre[1]) ** 2)
+            if distance < self.radius + 15:
+                percent_overlap = ((self.radius + 15 - distance) ** 2) / (4 * max(self.radius, 15) ** 2)
+                print(percent_overlap)
+                if percent_overlap >= 0.15:
+                    return pocket
+
     def update(self) -> None:
         self.is_colliding_with_wall()
         self.apply_friction()
 
-        self.position_before_collision = Vector2(self.x, self.y)
         if self.velocity.length() <= 0.1:
             self.velocity = Vector2()
         self.x += self.velocity.x
         self.y += self.velocity.y
-
-        self.has_processed_collision_this_frame = False
 
     def draw(self, window: pygame.Surface) -> None:
         if self.ball_type == BallType.Solid:
