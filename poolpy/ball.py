@@ -17,6 +17,7 @@ class Ball:
 
         self.radius = 10
         self.velocity = Vector2(0, 0)
+        self.distance_rolled: float = 0
 
     def is_colliding_with_wall(self) -> bool:
         # Top
@@ -87,7 +88,6 @@ class Ball:
             distance = sqrt((self.x - centre[0]) ** 2 + (self.y - centre[1]) ** 2)
             if distance < self.radius + 15:
                 percent_overlap = ((self.radius + 15 - distance) ** 2) / (4 * max(self.radius, 15) ** 2)
-                print(percent_overlap)
                 if percent_overlap >= 0.15:
                     return pocket
 
@@ -99,13 +99,40 @@ class Ball:
             self.velocity = Vector2()
         self.x += self.velocity.x
         self.y += self.velocity.y
+        self.distance_rolled += self.velocity.length()
+        if self.distance_rolled > 100:
+            self.distance_rolled = 0
+
+    def draw_shadow(self, window: pygame.Surface) -> None:
+        vcx, vcy = Globals.VIGNETTE_CENTRE
+        difference_vector = Vector2(self.x, self.y) - Vector2(vcx, vcy)
+        distance = difference_vector.length()
+        max_shadow_radius = 10
+        radius_factor = (distance / 500) * max_shadow_radius
+        shadow_major_minor = difference_vector.normalize() * radius_factor
+        rx, ry = shadow_major_minor
+        gfxdraw.filled_ellipse(
+            window,
+            int(self.x + rx),
+            int(self.y + ry),
+            int(abs(rx) + self.radius),
+            int(abs(ry) + self.radius),
+            Colour.darker(TABLE_GREEN, 1.5, 50)
+        )
 
     def draw(self, window: pygame.Surface) -> None:
         if self.ball_type == BallType.Solid:
             gfxdraw.filled_circle(window, int(self.x), int(self.y), self.radius, self.color)
         elif self.ball_type == BallType.Stripe:
             gfxdraw.filled_circle(window, int(self.x), int(self.y), self.radius-2, BALL_WHITE)
-            pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius+1, 4)
+            if 0 <= self.distance_rolled <= 25:
+                pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius+1, 4)
+            if 25 < self.distance_rolled <= 50:
+                pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius+1, 5)
+            if 50 < self.distance_rolled <= 75:
+                pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius+1, 6)
+            if 75 < self.distance_rolled <= 100:
+                pygame.draw.circle(window, self.color, (int(self.x), int(self.y)), self.radius+1, 5)
         elif self.ball_type == BallType.Cue:
             gfxdraw.filled_circle(window, int(self.x), int(self.y), self.radius, BALL_WHITE)
         elif self.ball_type == BallType.Black:

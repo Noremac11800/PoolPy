@@ -17,6 +17,10 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    mx, my = pygame.mouse.get_pos()
+                    Globals.VIGNETTE_CENTRE = (mx, my)
 
         if pygame.mouse.get_pressed()[0]:
             mx, my = pygame.mouse.get_pos()
@@ -26,6 +30,7 @@ if __name__ == "__main__":
             if table.is_aiming:
                 table.is_aiming = False
                 table.shoot(table.get_power())
+
 
         screen.fill(BLACK)
 

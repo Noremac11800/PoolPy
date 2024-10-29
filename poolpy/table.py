@@ -101,6 +101,18 @@ class Table:
 
     def draw(self, window: pygame.Surface) -> None:
         gfxdraw.box(window, pygame.Rect(150, 100, 300, 500), TABLE_GREEN)
+
+        # Cue lines
+        gfxdraw.line(window, 150, 100 + 400, 150 + 300, 100 + 400, WHITE)
+        gfxdraw.arc(window, 150 + 150, 100 + 400, 50, 0, 180, WHITE)
+        gfxdraw.filled_circle(window, 150 + 150 + 50, 100 + 400, 5, POCKET_BLACK)
+        gfxdraw.filled_circle(window, 150 + 150, 100 + 400, 5, POCKET_BLACK)
+        gfxdraw.filled_circle(window, 150 + 150 - 50, 100 + 400, 5, POCKET_BLACK)
+
+        for ball in self.balls:
+            ball.draw_shadow(window)
+
+        # Cushions/edges
         gfxdraw.box(window, pygame.Rect(130, 80, 20, 540), WOODEN_BROWN)
         gfxdraw.box(window, pygame.Rect(130, 80, 340, 20), WOODEN_BROWN)
         gfxdraw.box(window, pygame.Rect(300 + 150, 80, 20, 540), WOODEN_BROWN)
@@ -118,16 +130,52 @@ class Table:
         gfxdraw.filled_circle(window, 150 + 5, 500 + 100 - 5, 15, POCKET_BLACK)
         gfxdraw.filled_circle(window, 300 + 150 - 5, 500 + 100 - 5, 15, POCKET_BLACK)
 
-        # Cue lines
-        gfxdraw.line(window, 150, 100 + 400, 150 + 300, 100 + 400, WHITE)
-        gfxdraw.arc(window, 150 + 150, 100 + 400, 50, 0, 180, WHITE)
-        gfxdraw.filled_circle(window, 150 + 150 + 50, 100 + 400, 5, POCKET_BLACK)
-        gfxdraw.filled_circle(window, 150 + 150, 100 + 400, 5, POCKET_BLACK)
-        gfxdraw.filled_circle(window, 150 + 150 - 50, 100 + 400, 5, POCKET_BLACK)
-
         for ball in self.balls:
             ball.draw(window)
 
         if self.is_aiming and self.cue_ball is not None:
             mx, my = pygame.mouse.get_pos()
+            mouse_pos = Vector2(mx, my)
             pygame.draw.aaline(window, WHITE, (mx, my), (self.cue_ball.x, self.cue_ball.y))
+
+            position = Vector2(self.cue_ball.x, self.cue_ball.y)
+            ray_collisions = []
+            for ball in self.balls:
+                if ball is not self.cue_ball:
+                    ray_collision = Ray(position, position - mouse_pos).cast_to_circle(Vector2(ball.x, ball.y), ball.radius)
+                    if ray_collision is not None:
+                        ray_collisions.append((ball, ray_collision))
+
+            if len(ray_collisions) > 0:
+                closest_ray_collision = min(ray_collisions, key=lambda x: (x[1] - position).length())[1]
+                pygame.draw.aaline(window, WHITE, (self.cue_ball.x, self.cue_ball.y), (closest_ray_collision.x, closest_ray_collision.y))
+                gfxdraw.filled_circle(window, int(closest_ray_collision.x), int(closest_ray_collision.y), self.cue_ball.radius, Colour.lighter(BALL_WHITE, 1, 100))
+            else:
+                150, 100, 300, 500
+                top_wall_ray_collision = Ray(position, position - mouse_pos) \
+                    .cast_to_line_segment(Vector2(150, 100), Vector2(450, 100))
+                if top_wall_ray_collision is not None:
+                    pygame.draw.aaline(window, WHITE, (self.cue_ball.x, self.cue_ball.y), (top_wall_ray_collision.x, top_wall_ray_collision.y))
+                    gfxdraw.filled_circle(window, int(top_wall_ray_collision.x), int(top_wall_ray_collision.y), self.cue_ball.radius, Colour.lighter(BALL_WHITE, 1, 100))
+
+                bottom_wall_ray_collision = Ray(position, position - mouse_pos) \
+                    .cast_to_line_segment(Vector2(150, 600), Vector2(450, 600))
+                if bottom_wall_ray_collision is not None:
+                    pygame.draw.aaline(window, WHITE, (self.cue_ball.x, self.cue_ball.y), (bottom_wall_ray_collision.x, bottom_wall_ray_collision.y))
+                    gfxdraw.filled_circle(window, int(bottom_wall_ray_collision.x), int(bottom_wall_ray_collision.y), self.cue_ball.radius, Colour.lighter(BALL_WHITE, 1, 100))
+
+                left_wall_ray_collision = Ray(position, position - mouse_pos) \
+                    .cast_to_line_segment(Vector2(150, 100), Vector2(150, 600))
+                if left_wall_ray_collision is not None:
+                    pygame.draw.aaline(window, WHITE, (self.cue_ball.x, self.cue_ball.y), (left_wall_ray_collision.x, left_wall_ray_collision.y))
+                    gfxdraw.filled_circle(window, int(left_wall_ray_collision.x), int(left_wall_ray_collision.y), self.cue_ball.radius, Colour.lighter(BALL_WHITE, 1, 100))
+
+                right_wall_ray_collision = Ray(position, position - mouse_pos) \
+                    .cast_to_line_segment(Vector2(450, 100), Vector2(450, 600))
+                if right_wall_ray_collision is not None:
+                    pygame.draw.aaline(window, WHITE, (self.cue_ball.x, self.cue_ball.y), (right_wall_ray_collision.x, right_wall_ray_collision.y))
+                    gfxdraw.filled_circle(window, int(right_wall_ray_collision.x), int(right_wall_ray_collision.y), self.cue_ball.radius, Colour.lighter(BALL_WHITE, 1, 100))
+
+        # Vignette
+        for r in range(0, 400, 25):
+            gfxdraw.filled_circle(window, *Globals.VIGNETTE_CENTRE, r, VIGNETTE_YELLOW)
