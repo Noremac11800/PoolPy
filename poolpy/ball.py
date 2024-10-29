@@ -9,15 +9,17 @@ class BallType(Enum):
 
 
 class Ball:
-    def __init__(self, x: float, y: float, color: tuple, ball_type: BallType) -> None:
+    def __init__(self, x: float, y: float, color: tuple, ball_type: BallType, ball_id: int=-1) -> None:
         self.x = x
         self.y = y
         self.color = color
         self.ball_type = ball_type
+        self.ball_id = ball_id
 
         self.radius = 10
         self.velocity = Vector2(0, 0)
         self.distance_rolled: float = 0
+        self.channel: pygame.mixer.Channel = pygame.mixer.Channel(self.ball_id)
 
     def is_colliding_with_wall(self) -> bool:
         # Top
@@ -71,6 +73,10 @@ class Ball:
         self.velocity = vAi - ((vAi - vBi).dot(rA-rB)) / ((rB - rA).length() ** 2) * (rA - rB)
         other.velocity = vBi - ((vBi - vAi).dot(rB-rA)) / ((rA - rB).length() ** 2) * (rB - rA)
 
+        volume = min(self.velocity.length(), 10) / 10
+        self.channel.set_volume(volume)
+        self.channel.play(CLINK)
+
     def apply_friction(self) -> None:
         self.velocity *= TABLE_FRICTION_FACTOR
 
@@ -117,7 +123,7 @@ class Ball:
             int(self.y + ry),
             int(abs(rx) + self.radius),
             int(abs(ry) + self.radius),
-            Colour.darker(TABLE_GREEN, 1.5, 50)
+            Colour.darker(TABLE_GREEN, 1.5, 100)
         )
 
     def draw(self, window: pygame.Surface) -> None:

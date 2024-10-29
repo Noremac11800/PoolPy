@@ -10,6 +10,7 @@ if __name__ == "__main__":
 
     table = Table()
     table.rack()
+    table.reset_cue_ball()
 
     clock =  pygame.time.Clock()
     while True:
@@ -21,6 +22,9 @@ if __name__ == "__main__":
                 if event.button == 3:
                     mx, my = pygame.mouse.get_pos()
                     Globals.VIGNETTE_CENTRE = (mx, my)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    table.rack()
 
         if pygame.mouse.get_pressed()[0]:
             mx, my = pygame.mouse.get_pos()
@@ -30,7 +34,6 @@ if __name__ == "__main__":
             if table.is_aiming:
                 table.is_aiming = False
                 table.shoot(table.get_power())
-
 
         screen.fill(BLACK)
 

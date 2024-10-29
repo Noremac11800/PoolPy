@@ -8,6 +8,9 @@ from pygame import gfxdraw
 from poolpy.utils import *
 
 pygame.init()
+pygame.mixer.init()
+pygame.mixer.set_num_channels(16)
+CLINK = pygame.mixer.Sound("./poolpy/assets/clink_trimmed.wav")
 
 WIDTH = 600
 HEIGHT = 700
