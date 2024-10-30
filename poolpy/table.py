@@ -72,8 +72,9 @@ class Table:
 
     def get_power(self) -> float:
         mx, my = pygame.mouse.get_pos()
+        mouse_pos = Vector2(mx, my)
         if self.cue_ball is not None:
-            line_length = (self.cue_ball.x - mx) ** 2 + (self.cue_ball.y - my) ** 2
+            line_length = (Vector2(self.cue_ball.x, self.cue_ball.y) - mouse_pos).length()
             percent = min(1, line_length / MAX_POWER_LINE_LENGTH)
             return MAX_POWER * percent
         return 0
@@ -82,7 +83,7 @@ class Table:
         mx, my = pygame.mouse.get_pos()
         mouse_pos = Vector2(mx, my)
         if self.cue_ball is not None:
-            direction = Vector2(self.cue_ball.x, self.cue_ball.y) - mouse_pos
+            direction = (Vector2(self.cue_ball.x, self.cue_ball.y) - mouse_pos).normalize()
             self.cue_ball.velocity = power * direction
 
     def update_balls(self) -> None:
