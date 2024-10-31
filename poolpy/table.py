@@ -174,12 +174,30 @@ class Table:
                     self.reset_cue_ball()
                     self.was_white_ball_pocketed = False
                     self.change_player()
-                    self.shots_left = 2
+                    if self.current_player == 1:
+                        if len(self.player1_balls) == 0:
+                            self.shots_left = 1
+                        else:
+                            self.shots_left = 2
+                    elif self.current_player == 2:
+                        if len(self.player2_balls) == 0:
+                            self.shots_left = 1
+                        else:
+                            self.shots_left = 2
                 elif not self.has_ball_been_hit_this_turn \
                 or  self.was_wrong_ball_hit \
                 or  self.was_wrong_ball_pocketed:
                     self.change_player()
-                    self.shots_left = 2
+                    if self.current_player == 1:
+                        if len(self.player1_balls) == 0:
+                            self.shots_left = 1
+                        else:
+                            self.shots_left = 2
+                    elif self.current_player == 2:
+                        if len(self.player2_balls) == 0:
+                            self.shots_left = 1
+                        else:
+                            self.shots_left = 2
                 elif self.shots_left == 0:
                     self.change_player()
                     self.shots_left = 1
@@ -296,11 +314,13 @@ class Table:
                     self.has_ball_been_hit_this_turn = True
                     if not (self.player1_ball_type is None or self.player2_ball_type is None):
                         if self.current_player == 1:
-                            if ball.ball_type != self.player1_ball_type:
-                                self.was_wrong_ball_hit = True
+                            if len(self.player1_balls) != 0:
+                                if ball.ball_type != self.player1_ball_type:
+                                    self.was_wrong_ball_hit = True
                         elif self.current_player == 2:
-                            if ball.ball_type != self.player2_ball_type:
-                                self.was_wrong_ball_hit = True
+                            if len(self.player2_balls) != 0:
+                                if ball.ball_type != self.player2_ball_type:
+                                    self.was_wrong_ball_hit = True
 
     def check_pockets(self, ball: Ball) -> None:
         """
