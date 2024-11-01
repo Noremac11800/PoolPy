@@ -1,3 +1,1 @@
-pyinstaller --name "poolpy" --onefile --windowed ./app/main.py --add-data "./poolpy/assets:." --splash ./poolpy/assets/splash.png
-
-pyinstaller --name "poolpy" --onefile --windowed ./main.py --add-data "./poolpy/assets:." --icon="./poolpy/assets/icon.icns"
+pyinstaller -F --add-data=poolpy/assets/casino.ttf:poolpy/assets --add-data=poolpy/assets/player.otf:poolpy/assets --add-data=poolpy/assets/clink_trimmed.wav:poolpy/assets --icon=poolpy/assets/icon.icns --name=poolpy main.py

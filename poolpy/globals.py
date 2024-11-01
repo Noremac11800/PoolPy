@@ -44,7 +44,7 @@ DEBUG = pygame.font.Font("./poolpy/assets/player.otf", 14)
 
 DEBUG_ON = False        # Debug mode flag
 
-WIDTH = 600             # Default window wwidth
+WIDTH = 600             # Default window width
 HEIGHT = 700            # Default window height
 
 # Colors
@@ -81,7 +81,7 @@ WOODEN_BROWN = (139, 69, 19)
 POCKET_BLACK = (46, 46, 46)
 
 # Physics constants
-MAX_POWER = 25                      # The maximum power that can be applied to the cue ball in a given shot
+MAX_POWER = 20                      # The maximum power that can be applied to the cue ball in a given shot
 MAX_POWER_LINE_LENGTH = 150         # The maximum length of the power line in a given shot (in pixels)
 TABLE_FRICTION_FACTOR = 0.990       # The friction factor of the table
 WALL_RESTITUTION_FACTOR = 0.80      # The wall restitution factor. How much energy wall collisions take from the ball
