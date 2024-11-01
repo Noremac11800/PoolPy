@@ -158,8 +158,11 @@ class Table:
                 self.is_turn_in_play = False
                 if self.was_black_ball_pocketed:
                     if self.was_white_ball_pocketed:
-                        self.change_player()
-                    if self.current_player == 1:
+                        if self.current_player == 1:
+                            self.game_over(2)
+                        elif self.current_player == 2:
+                            self.game_over(1)
+                    elif self.current_player == 1:
                         if len(self.player1_balls) == 0:
                             self.game_over(1)
                         else:
